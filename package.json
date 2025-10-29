@@ -1,0 +1,64 @@
+{
+  "name": "pure",
+  "version": "0.0.1",
+  "description": "A static site generator for photo sharing",
+  "type": "module",
+  "main": "./dist/cli.js",
+  "bin": {
+    "pure": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "prepare": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "blog",
+    "photoblog",
+    "static-site"
+  ],
+  "author": "",
+  "license": "AGPL-3.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pureplace-hq/pure.git"
+  },
+  "homepage": "https://github.com/pureplace-hq/pure",
+  "files": [
+    "dist/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "commander": "^14.0.2",
+    "ejs": "^3.1.10",
+    "esbuild": "^0.25.11",
+    "feed": "^5.1.0",
+    "image-size": "^2.0.2",
+    "js-yaml": "^4.1.0",
+    "photoswipe": "^5.4.4",
+    "photoswipe-dynamic-caption-plugin": "^1.2.7",
+    "sharp": "^0.34.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.38.0",
+    "@types/ejs": "^3.1.5",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.9.2",
+    "eslint": "^9.38.0",
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2"
+  }
+}

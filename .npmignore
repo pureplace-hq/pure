@@ -1,0 +1,39 @@
+# Development files
+.claude/
+.git/
+.github/
+
+# Source files (we publish dist/ instead)
+src/
+tsconfig.json
+*.ts
+!*.d.ts
+
+# Test files
+test/
+*.test.js
+*.test.ts
+coverage/
+
+# Old JS files (if any remain)
+bin/
+lib/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Misc
+.env
+.env.local
