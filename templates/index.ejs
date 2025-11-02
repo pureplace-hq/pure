@@ -187,8 +187,8 @@
             <a href="<%= image.path %>"
                data-pswp-width="<%= image.width %>"
                data-pswp-height="<%= image.height %>">
-              <img src="<%= image.path %>" alt="<%= post.comment || 'Post' %>" loading="lazy" />
-              <div class="pswp-caption-content-<%= postIndex %>"><% if (post.comment) { %><strong><%= post.comment %></strong><% } %><% if (image.caption) { %><br /><%= image.caption %><% } %></div>
+              <img src="<%= image.path %>" alt="<%= post.title || 'Post' %>" loading="lazy" />
+              <div class="pswp-caption-content-<%= postIndex %>"><% if (post.title) { %><strong><%= post.title %></strong><% } %><% if (image.caption) { %><br /><%= image.caption %><% } %></div>
             </a>
           </div>
           <% }); %>
