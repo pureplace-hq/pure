@@ -21,6 +21,7 @@ export interface PureConfig {
   name?: string;
   avatar?: string;
   prefixes?: string[];
+  domain?: string;
 
   rss?: {
     baseUrl?: string;

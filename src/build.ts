@@ -4,6 +4,7 @@ import { PostData, PureConfig } from "./types.js";
 import { generateRSSFeed } from "./generator/rss.js";
 import { copyImagesToOutput } from "./generator/image.js";
 import { generateHTML, generateJS } from "./generator/html.js";
+import { generateCNAME } from "./generator/file.js";
 import { loadPureConfig } from "./config.js";
 
 const DEFAULT_OUTPUT_DIR = "public";
@@ -51,4 +52,5 @@ export async function generateOutput(
   await copyImagesToOutput(posts, outputDir, config);
 
   generateRSSFeed(posts, config, outputDir);
+  generateCNAME(config, outputDir);
 }
