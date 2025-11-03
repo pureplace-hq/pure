@@ -38,6 +38,7 @@ export function generateHTML(
     data: {
       name: config.name,
       avatar: config.avatar,
+      hasRss: !!config.baseUrl,
     },
   };
 

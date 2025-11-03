@@ -18,10 +18,14 @@ All configuration is done in a single `pure.yml` file.
 
 - **name**: Display name for the site (default: "username")
 - **avatar**: Path to profile picture
-- **rss.baseUrl**: Base URL for RSS feed generation (required for RSS)
+- **baseUrl**: Base URL with protocol
+  ```yaml
+  baseUrl: https://example.com
+  ```
+- **rss.limit**: Maximum number of posts to include in RSS feed (default: all posts)
   ```yaml
   rss:
-    baseUrl: https://example.com
+    limit: 50
   ```
 - **prefixes**: Array of site prefixes. Can be used to generate unguessable "private" versions of the site.
   ```yaml
@@ -46,8 +50,9 @@ Each post requires:
 ```yaml
 name: My Pictures
 avatar: profile.jpg
+baseUrl: https://example.com
 rss:
-  baseUrl: https://photos.example.com
+  limit: 50
 prefixes:
   - abcd1234xyz
 

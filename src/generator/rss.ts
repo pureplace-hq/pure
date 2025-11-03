@@ -8,17 +8,18 @@ export function generateRSSFeed(
   config: PureConfig,
   outputDir: string,
 ): void {
-  const baseUrl = config.rss?.baseUrl;
+  const baseUrl = config.baseUrl;
   if (!baseUrl) {
-    console.log("RSS not configured, skipping");
+    console.log("RSS not configured (baseUrl required), skipping");
     return;
   }
 
   const siteName = config.name || "Image Gallery";
+  const limit = config.rss?.limit;
 
   const feed = new Feed({
     title: siteName,
-    description: "A ",
+    description: "description",
     id: baseUrl,
     link: baseUrl,
     language: "en",
@@ -28,11 +29,11 @@ export function generateRSSFeed(
     },
   });
 
-  // Add each post as a feed item
-  posts.forEach((post) => {
+  const postsToInclude = limit ? posts.slice(0, limit) : posts;
+
+  postsToInclude.forEach((post) => {
     let content = "";
 
-    // Add images with captions
     post.images.forEach((image) => {
       const imageUrl = `${baseUrl}/${image.path}`;
       const title = post.title || "Post";

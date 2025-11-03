@@ -13,7 +13,7 @@ export interface PostData {
 
 export interface TemplateData {
   posts: PostData[];
-  data: { name?: string; avatar?: string };
+  data: { name?: string; avatar?: string; hasRss?: boolean };
 }
 
 export interface PureConfig {
@@ -21,10 +21,10 @@ export interface PureConfig {
   name?: string;
   avatar?: string;
   prefixes?: string[];
-  domain?: string;
+  baseUrl?: string;
 
   rss?: {
-    baseUrl?: string;
+    limit?: number;
   };
 
   images?: {

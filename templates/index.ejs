@@ -74,6 +74,36 @@
       font-weight: 600;
     }
 
+    .profile-links {
+      margin-left: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-self: flex-start;
+    }
+
+    .profile-links a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #fafafa;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border: 1px solid #262626;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .profile-links a:hover {
+      background: #262626;
+    }
+
+    .profile-links svg {
+      width: 16px;
+      height: 16px;
+    }
+
     main {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -173,6 +203,18 @@
         <div class="profile-stats">
           <span><strong><%= posts.length %></strong> posts</span>
         </div>
+      </div>
+      <div class="profile-links">
+        <% if (data.hasRss) { %>
+        <a href="feed.xml">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 11a9 9 0 0 1 9 9"></path>
+            <path d="M4 4a16 16 0 0 1 16 16"></path>
+            <circle cx="5" cy="19" r="1"></circle>
+          </svg>
+          Subscribe
+        </a>
+        <% } %>
       </div>
     </div>
   </header>
