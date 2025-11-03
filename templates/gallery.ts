@@ -12,12 +12,11 @@ document.querySelectorAll(".image-grid").forEach((gallery, index) => {
     pswpModule: () => import("photoswipe"),
     showHideAnimationType: "none",
     zoomAnimationDuration: false,
+    initialZoomLevel: "fit",
+    secondaryZoomLevel: "fit",
   });
 
-  // TODO: Review if captionPlugin needs to be used directly
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const captionPlugin = new PhotoSwipeDynamicCaption(lightbox, {
-    // Plugins options, for example:
+  new PhotoSwipeDynamicCaption(lightbox, {
     type: "auto",
     captionContent: `.pswp-caption-content-${index}`,
   });
