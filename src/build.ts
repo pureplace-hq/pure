@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { PostData, PureConfig } from "./types.js";
+import { PostData, PureConfig, BuildOptions } from "./types.js";
 import { generateRSSFeed } from "./generator/rss.js";
 import { copyImagesToOutput } from "./generator/image.js";
 import { generateHTML, generateJS } from "./generator/html.js";
@@ -9,13 +9,11 @@ import { loadPureConfig } from "./config.js";
 
 const DEFAULT_OUTPUT_DIR = "public";
 
-export async function build(options: { output?: string }): Promise<void> {
+export async function build(options: BuildOptions): Promise<void> {
   console.log("Generating from pure.yml...");
 
   const { config, posts } = loadPureConfig();
   console.log(`Found ${posts.length} post${posts.length !== 1 ? "s" : ""}`);
-
-  const baseOutputDir = options.output || DEFAULT_OUTPUT_DIR;
 
   // Default to empty string prefix if not specified
   const prefixes =
@@ -25,8 +23,7 @@ export async function build(options: { output?: string }): Promise<void> {
 
   // Generate for each prefix
   for (const prefix of prefixes) {
-    const outputDir = path.join(baseOutputDir, prefix);
-    await generateOutput(posts, config, outputDir);
+    await generateOutput(posts, config, prefix, options);
   }
 
   console.log(
@@ -38,8 +35,12 @@ export async function build(options: { output?: string }): Promise<void> {
 export async function generateOutput(
   posts: PostData[],
   config: PureConfig,
-  outputDir: string,
+  prefix: string,
+  options: BuildOptions,
 ): Promise<void> {
+  const baseOutputDir = options.output || DEFAULT_OUTPUT_DIR;
+  const outputDir = path.join(baseOutputDir, prefix);
+
   console.log(`\nGenerating to ${outputDir}...`);
 
   if (!fs.existsSync(outputDir)) {
@@ -51,6 +52,6 @@ export async function generateOutput(
 
   await copyImagesToOutput(posts, outputDir, config);
 
-  generateRSSFeed(posts, config, outputDir);
+  generateRSSFeed(posts, config, prefix, outputDir);
   generateCNAME(config, outputDir);
 }

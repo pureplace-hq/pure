@@ -33,3 +33,7 @@ export interface PureConfig {
 
   posts: Array<PostData>;
 }
+
+export interface BuildOptions {
+  output?: string;
+}

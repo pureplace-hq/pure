@@ -6,6 +6,7 @@ import { PostData, PureConfig } from "../types.js";
 export function generateRSSFeed(
   posts: PostData[],
   config: PureConfig,
+  prefix: string,
   outputDir: string,
 ): void {
   const baseUrl = config.baseUrl;
@@ -35,7 +36,9 @@ export function generateRSSFeed(
     let content = "";
 
     post.images.forEach((image) => {
-      const imageUrl = `${baseUrl}/${image.path}`;
+      const imageUrl = prefix
+        ? `${baseUrl}/${prefix}/${image.path}`
+        : `${baseUrl}/${image.path}`;
       const title = post.title || "Post";
       content += `<img src="${imageUrl}" alt="${title}" /><br/>`;
 
