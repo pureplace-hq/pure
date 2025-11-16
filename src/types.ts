@@ -1,5 +1,6 @@
 export interface ImageData {
   path: string;
+  hashedPath?: string;
   caption?: string;
   width?: number;
   height?: number;

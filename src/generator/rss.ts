@@ -36,9 +36,10 @@ export function generateRSSFeed(
     let content = "";
 
     post.images.forEach((image) => {
+      const imagePath = image.hashedPath || image.path;
       const imageUrl = prefix
-        ? `${baseUrl}/${prefix}/${image.path}`
-        : `${baseUrl}/${image.path}`;
+        ? `${baseUrl}/${prefix}/${imagePath}`
+        : `${baseUrl}/${imagePath}`;
       const title = post.title || "Post";
       content += `<img src="${imageUrl}" alt="${title}" /><br/>`;
 

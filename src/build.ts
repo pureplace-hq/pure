@@ -48,10 +48,9 @@ export async function generateOutput(
   }
 
   await generateJS(outputDir);
-  generateHTML(posts, config, outputDir);
-
   await copyImagesToOutput(posts, outputDir, config);
 
+  generateHTML(posts, config, outputDir);
   generateRSSFeed(posts, config, prefix, outputDir);
   generateCNAME(config, outputDir);
 }
