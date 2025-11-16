@@ -41,12 +41,13 @@ export function generateRSSFeed(
       const imageUrl = prefix
         ? `${baseUrl}/${prefix}/${imagePath}`
         : `${baseUrl}/${imagePath}`;
-      const title = post.title || "Post";
-      content += `<img src="${imageUrl}" alt="${title}" /><br/>`;
+      const alt = image.caption || post.title || "Post";
 
       if (image.caption) {
         content += `<p>${image.caption}</p>`;
       }
+
+      content += `<img src="${imageUrl}" alt="${alt}" /><br/>`;
     });
 
     feed.addItem({
