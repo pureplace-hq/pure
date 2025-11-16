@@ -228,8 +228,9 @@
           <div class="image-item">
             <a href="<%= image.hashedPath || image.path %>"
                data-pswp-width="<%= image.width %>"
-               data-pswp-height="<%= image.height %>">
-              <img src="<%= image.hashedPath || image.path %>" alt="<%= post.title || 'Post' %>" loading="lazy" />
+               data-pswp-height="<%= image.height %>"
+               data-pswp-msrc="<%= image.thumbnailPath || image.hashedPath || image.path %>">
+              <img src="<%= image.thumbnailPath || image.hashedPath || image.path %>" alt="<%= post.title || 'Post' %>" loading="lazy" />
               <div class="pswp-caption-content-<%= postIndex %>"><% if (post.title) { %><strong><%= post.title %></strong><% } %><% if (image.caption) { %><br /><%= image.caption %><% } %></div>
             </a>
           </div>
