@@ -26,6 +26,7 @@ export interface PureConfig {
 
   rss?: {
     limit?: number;
+    description?: string;
   };
 
   images?: {

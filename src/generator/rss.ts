@@ -17,10 +17,11 @@ export function generateRSSFeed(
 
   const siteName = config.name || "Image Gallery";
   const limit = config.rss?.limit;
+  const description = config.rss?.description || siteName;
 
   const feed = new Feed({
     title: siteName,
-    description: "description",
+    description: description,
     id: baseUrl,
     link: baseUrl,
     language: "en",
