@@ -1,7 +1,12 @@
 import fs from "fs";
 import path from "path";
+import ejs from "ejs";
 import { Feed } from "feed";
 import { PostData, PureConfig } from "../types.js";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const TEMPLATE_DIR = dirname(fileURLToPath(import.meta.url));
 
 export function generateRSSFeed(
   posts: PostData[],
@@ -32,23 +37,25 @@ export function generateRSSFeed(
   });
 
   const postsToInclude = limit ? posts.slice(0, limit) : posts;
+  const templatePath = path.join(TEMPLATE_DIR, "../../templates/rss-item.ejs");
+  const template = fs.readFileSync(templatePath, "utf-8");
 
   postsToInclude.forEach((post) => {
-    let content = "";
-
-    post.images.forEach((image) => {
+    const images = post.images.map((image) => {
       const imagePath = image.hashedPath || image.path;
       const imageUrl = prefix
         ? `${baseUrl}/${prefix}/${imagePath}`
         : `${baseUrl}/${imagePath}`;
       const alt = image.caption || post.title || "Post";
 
-      if (image.caption) {
-        content += `<p>${image.caption}</p>`;
-      }
-
-      content += `<img src="${imageUrl}" alt="${alt}" /><br/>`;
+      return {
+        url: imageUrl,
+        alt: alt,
+        caption: image.caption,
+      };
     });
+
+    const content = ejs.render(template, { images });
 
     feed.addItem({
       title: post.title || new Date(post.timestamp).toLocaleString(),

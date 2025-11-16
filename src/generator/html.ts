@@ -6,12 +6,12 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { PostData, PureConfig, TemplateData } from "../types.js";
 
-const SOURCE_DIR = dirname(fileURLToPath(import.meta.url));
+const TEMPLATE_DIR = dirname(fileURLToPath(import.meta.url));
 
 export async function generateJS(outputDir: string): Promise<void> {
   try {
     await esbuild.build({
-      entryPoints: [path.join(SOURCE_DIR, "../../templates/gallery.js")],
+      entryPoints: [path.join(TEMPLATE_DIR, "../../templates/gallery.js")],
       bundle: true,
       minify: true,
       outfile: path.join(outputDir, "gallery.js"),
@@ -31,7 +31,7 @@ export function generateHTML(
   config: PureConfig,
   outputDir: string,
 ): void {
-  const templatePath = path.join(SOURCE_DIR, "../../templates/index.ejs");
+  const templatePath = path.join(TEMPLATE_DIR, "../../templates/index.ejs");
 
   const templateData: TemplateData = {
     posts,
