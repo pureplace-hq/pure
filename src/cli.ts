@@ -4,6 +4,7 @@ import { Command } from "commander";
 import { build } from "./build.js";
 
 const DEFAULT_OUTPUT_DIR = "public";
+const DEFAULT_SOURCE_DIR = process.cwd();
 
 const program = new Command();
 
@@ -17,6 +18,7 @@ program
 program
   .command("build")
   .description("Build the static site")
+  .option("-s, --source <dir>", "Source directory", DEFAULT_SOURCE_DIR)
   .option("-o, --output <dir>", "Output directory", DEFAULT_OUTPUT_DIR)
   .action(build);
 

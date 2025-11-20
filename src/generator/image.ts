@@ -6,15 +6,17 @@ import { PostData, PureConfig } from "../types.js";
 
 export async function copyImagesToOutput(
   posts: PostData[],
+  sourceDir: string,
   outputDir: string,
   config: PureConfig,
 ): Promise<void> {
-  await copyPostImagesToOutput(posts, outputDir, config);
-  copyAvatar(config, outputDir);
+  await copyPostImagesToOutput(posts, sourceDir, outputDir, config);
+  copyAvatar(config, sourceDir, outputDir);
 }
 
 async function copyPostImagesToOutput(
   posts: PostData[],
+  sourceDir: string,
   outputDir: string,
   config: PureConfig,
 ): Promise<number> {
@@ -22,7 +24,7 @@ async function copyPostImagesToOutput(
 
   for (const post of posts) {
     for (const image of post.images) {
-      const hashedPath = await copyImage(image.path, outputDir, config);
+      const hashedPath = await copyImage(image.path, sourceDir, outputDir, config);
       if (hashedPath) {
         image.hashedPath = hashedPath;
         totalImagesCopied++;
@@ -35,12 +37,14 @@ async function copyPostImagesToOutput(
 
 async function copyImage(
   imagePath: string,
+  sourceDir: string,
   outputDir: string,
   config: PureConfig,
 ): Promise<string | null> {
   const stripMetadata = config.images?.stripMetadata || false;
 
-  const sourcePath = path.resolve(imagePath);
+  const sourcePath = path.resolve(sourceDir, imagePath);
+  const destPath = path.join(outputDir, imagePath);
 
   // Copy image file if it exists
   if (!fs.existsSync(sourcePath)) {
@@ -53,8 +57,6 @@ async function copyImage(
   const hash = crypto.createHash('md5').update(fileBuffer).digest('hex').slice(0, 8);
   const parsedPath = path.parse(imagePath);
   const finalPath = path.join(parsedPath.dir, `${hash}${parsedPath.ext}`);
-
-  const destPath = path.join(outputDir, finalPath);
 
   // Create directory structure if needed
   const destDir = path.dirname(destPath);
@@ -85,12 +87,16 @@ async function copyImage(
   return finalPath;
 }
 
-function copyAvatar(config: PureConfig, outputDir: string): void {
+function copyAvatar(
+  config: PureConfig,
+  sourceDir: string,
+  outputDir: string,
+): void {
   if (!config.avatar) {
     return;
   }
 
-  const avatarPath = path.resolve(config.avatar);
+  const avatarPath = path.resolve(sourceDir, config.avatar);
   if (!fs.existsSync(avatarPath)) {
     console.log(`Warning: Avatar file not found: ${config.avatar}`);
     return;

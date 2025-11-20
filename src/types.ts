@@ -38,4 +38,5 @@ export interface PureConfig {
 
 export interface BuildOptions {
   output?: string;
+  source: string;
 }

@@ -5,11 +5,14 @@ import { imageSize } from "image-size";
 import { PostData, PureConfig, ImageData } from "./types.js";
 
 // Load configuration and posts from pure.yml file
-export function loadPureConfig(configFile: string = "pure.yml"): {
+export function loadPureConfig(
+  configFile: string = "pure.yml",
+  sourceDir: string,
+): {
   config: PureConfig;
   posts: PostData[];
 } {
-  const configPath = path.join(process.cwd(), configFile);
+  const configPath = path.join(sourceDir, configFile);
 
   if (!fs.existsSync(configPath)) {
     console.error(`Error: ${configFile} not found in current directory`);
@@ -62,7 +65,7 @@ posts:
           );
         }
 
-        const dimensions = getImageDimensions(img.path);
+        const dimensions = getImageDimensions(img.path, sourceDir);
         return {
           path: img.path,
           caption: img.caption,
@@ -96,14 +99,17 @@ posts:
   }
 }
 
-function getImageDimensions(imagePath: string): {
+function getImageDimensions(
+  imagePath: string,
+  sourceDir: string,
+): {
   width: number;
   height: number;
 } {
   const defaultDimensions = { width: 800, height: 800 };
 
   try {
-    const resolvedPath = path.resolve(process.cwd(), imagePath);
+    const resolvedPath = path.resolve(sourceDir, imagePath);
     if (!fs.existsSync(resolvedPath)) {
       console.log(`Warning: Image not found: ${imagePath}`);
       return defaultDimensions;

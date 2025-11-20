@@ -12,7 +12,7 @@ const DEFAULT_OUTPUT_DIR = "public";
 export async function build(options: BuildOptions): Promise<void> {
   console.log("Generating from pure.yml...");
 
-  const { config, posts } = loadPureConfig();
+  const { config, posts } = loadPureConfig("pure.yml", options.source);
   console.log(`Found ${posts.length} post${posts.length !== 1 ? "s" : ""}`);
 
   // Default to empty string prefix if not specified
@@ -40,6 +40,7 @@ export async function generateOutput(
 ): Promise<void> {
   const baseOutputDir = options.output || DEFAULT_OUTPUT_DIR;
   const outputDir = path.join(baseOutputDir, prefix);
+  const sourceDir = options.source;
 
   console.log(`\nGenerating to ${outputDir}...`);
 
@@ -48,7 +49,9 @@ export async function generateOutput(
   }
 
   await generateJS(outputDir);
-  await copyImagesToOutput(posts, outputDir, config);
+  generateHTML(posts, config, outputDir);
+
+  await copyImagesToOutput(posts, sourceDir, outputDir, config);
 
   generateHTML(posts, config, outputDir);
   generateRSSFeed(posts, config, prefix, outputDir);
