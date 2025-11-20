@@ -44,7 +44,6 @@ async function copyImage(
   const stripMetadata = config.images?.stripMetadata || false;
 
   const sourcePath = path.resolve(sourceDir, imagePath);
-  const destPath = path.join(outputDir, imagePath);
 
   // Copy image file if it exists
   if (!fs.existsSync(sourcePath)) {
@@ -56,7 +55,9 @@ async function copyImage(
   const fileBuffer = fs.readFileSync(sourcePath);
   const hash = crypto.createHash('md5').update(fileBuffer).digest('hex').slice(0, 8);
   const parsedPath = path.parse(imagePath);
-  const finalPath = path.join(parsedPath.dir, `${hash}${parsedPath.ext}`);
+  const hashedFilename = `${hash}${parsedPath.ext}`;
+  const relativePath = path.join(parsedPath.dir, hashedFilename);
+  const destPath = path.join(outputDir, relativePath);
 
   // Create directory structure if needed
   const destDir = path.dirname(destPath);
@@ -74,7 +75,7 @@ async function copyImage(
           icc: undefined, // Keep color profile for quality
         })
         .toFile(destPath);
-      return finalPath;
+      return relativePath;
     } catch (error) {
       console.log(
         `Warning: Failed to process ${imagePath}: ${(error as Error).message}`,
@@ -84,7 +85,7 @@ async function copyImage(
   }
 
   fs.copyFileSync(sourcePath, destPath);
-  return finalPath;
+  return relativePath;
 }
 
 function copyAvatar(
