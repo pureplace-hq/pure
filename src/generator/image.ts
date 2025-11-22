@@ -24,9 +24,10 @@ async function copyPostImagesToOutput(
 
   for (const post of posts) {
     for (const image of post.images) {
-      const hashedPath = await copyImage(image.path, sourceDir, outputDir, config);
-      if (hashedPath) {
-        image.hashedPath = hashedPath;
+      const result = await copyImage(image.path, sourceDir, outputDir, config);
+      if (result) {
+        image.hashedPath = result.hashedPath;
+        image.thumbnailPath = result.thumbnailPath;
         totalImagesCopied++;
       }
     }
@@ -40,7 +41,7 @@ async function copyImage(
   sourceDir: string,
   outputDir: string,
   config: PureConfig,
-): Promise<string | null> {
+): Promise<{ hashedPath: string; thumbnailPath: string } | null> {
   const stripMetadata = config.images?.stripMetadata || false;
 
   const sourcePath = path.resolve(sourceDir, imagePath);
@@ -57,7 +58,10 @@ async function copyImage(
   const parsedPath = path.parse(imagePath);
   const hashedFilename = `${hash}${parsedPath.ext}`;
   const relativePath = path.join(parsedPath.dir, hashedFilename);
+  const thumbnailPath = path.join(parsedPath.dir, `${hash}-thumb${parsedPath.ext}`);
+
   const destPath = path.join(outputDir, relativePath);
+  const destThumbPath = path.join(outputDir, thumbnailPath);
 
   // Create directory structure if needed
   const destDir = path.dirname(destPath);
@@ -65,27 +69,42 @@ async function copyImage(
     fs.mkdirSync(destDir, { recursive: true });
   }
 
-  if (stripMetadata) {
-    try {
-      // Auto-rotate based on EXIF orientation, then strip it
-      await sharp(sourcePath)
-        .rotate()
-        .withMetadata({
-          exif: {},
-          icc: undefined, // Keep color profile for quality
-        })
-        .toFile(destPath);
-      return relativePath;
-    } catch (error) {
-      console.log(
-        `Warning: Failed to process ${imagePath}: ${(error as Error).message}`,
-      );
-      return null;
-    }
-  }
+  try {
+    // Always use sharp to generate both full-size and thumbnail
+    let fullPipeline = sharp(sourcePath).rotate();
+    let thumbPipeline = sharp(sourcePath).rotate();
 
-  fs.copyFileSync(sourcePath, destPath);
-  return relativePath;
+    // Apply metadata stripping if enabled
+    if (stripMetadata) {
+      fullPipeline = fullPipeline.withMetadata({
+        exif: {},
+        icc: undefined,
+      });
+      thumbPipeline = thumbPipeline.withMetadata({
+        exif: {},
+        icc: undefined,
+      });
+    }
+
+    // Generate thumbnail (400px width, preserving aspect ratio)
+    thumbPipeline = thumbPipeline.resize(400, null, {
+      withoutEnlargement: true,
+      fit: 'inside',
+    });
+
+    // Process both images in parallel
+    await Promise.all([
+      fullPipeline.toFile(destPath),
+      thumbPipeline.toFile(destThumbPath),
+    ]);
+
+    return { hashedPath: relativePath, thumbnailPath };
+  } catch (error) {
+    console.log(
+      `Warning: Failed to process ${imagePath}: ${(error as Error).message}`,
+    );
+    return null;
+  }
 }
 
 function copyAvatar(
