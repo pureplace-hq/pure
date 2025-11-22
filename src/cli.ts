@@ -2,6 +2,7 @@
 
 import { Command } from "commander";
 import { build } from "./build.js";
+import { serve } from "./serve.js";
 
 const DEFAULT_OUTPUT_DIR = "public";
 const DEFAULT_SOURCE_DIR = process.cwd();
@@ -21,5 +22,13 @@ program
   .option("-s, --source <dir>", "Source directory", DEFAULT_SOURCE_DIR)
   .option("-o, --output <dir>", "Output directory", DEFAULT_OUTPUT_DIR)
   .action(build);
+
+program
+  .command("serve")
+  .description("Build and serve the site locally")
+  .option("-s, --source <dir>", "Source directory", DEFAULT_SOURCE_DIR)
+  .option("-o, --output <dir>", "Output directory", DEFAULT_OUTPUT_DIR)
+  .option("-p, --port <number>", "Port number", "3000")
+  .action(serve);
 
 program.parse();
