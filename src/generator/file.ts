@@ -3,7 +3,7 @@ import path from "path";
 import { PureConfig } from "../types.js";
 
 export function generateCNAME(config: PureConfig, outputDir: string): void {
-  if (!config.baseUrl) {
+  if (!config.cname || !config.baseUrl) {
     return;
   }
 

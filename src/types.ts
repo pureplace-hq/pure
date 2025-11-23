@@ -34,6 +34,8 @@ export interface PureConfig {
     stripMetadata?: boolean;
   };
 
+  cname?: boolean;
+
   posts: Array<PostData>;
 }
 
