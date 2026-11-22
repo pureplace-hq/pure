@@ -24,7 +24,10 @@ async function copyPostImagesToOutput(
 
   for (const post of posts) {
     for (const image of post.images) {
-      const result = await copyImage(image.path, sourceDir, outputDir, config);
+      const result =
+        image.type === "video"
+          ? await copyVideo(image.path, image.poster, sourceDir, outputDir)
+          : await copyImage(image.path, sourceDir, outputDir, config);
       if (result) {
         image.hashedPath = result.hashedPath;
         image.thumbnailPath = result.thumbnailPath;
@@ -54,11 +57,18 @@ async function copyImage(
 
   // Calculate content hash
   const fileBuffer = fs.readFileSync(sourcePath);
-  const hash = crypto.createHash('md5').update(fileBuffer).digest('hex').slice(0, 8);
+  const hash = crypto
+    .createHash("md5")
+    .update(fileBuffer)
+    .digest("hex")
+    .slice(0, 8);
   const parsedPath = path.parse(imagePath);
   const hashedFilename = `${hash}${parsedPath.ext}`;
   const relativePath = path.join(parsedPath.dir, hashedFilename);
-  const thumbnailPath = path.join(parsedPath.dir, `${hash}-thumb${parsedPath.ext}`);
+  const thumbnailPath = path.join(
+    parsedPath.dir,
+    `${hash}-thumb${parsedPath.ext}`,
+  );
 
   const destPath = path.join(outputDir, relativePath);
   const destThumbPath = path.join(outputDir, thumbnailPath);
@@ -89,7 +99,7 @@ async function copyImage(
     // Generate thumbnail (400px width, preserving aspect ratio)
     thumbPipeline = thumbPipeline.resize(400, null, {
       withoutEnlargement: true,
-      fit: 'inside',
+      fit: "inside",
     });
 
     // Process both images in parallel
@@ -104,6 +114,59 @@ async function copyImage(
       `Warning: Failed to process ${imagePath}: ${(error as Error).message}`,
     );
     return null;
+  }
+}
+
+// Videos are copied as-is (no transcoding). The grid tile is the video itself
+// unless a poster image is given, in which case it becomes the thumbnail.
+async function copyVideo(
+  videoPath: string,
+  posterPath: string | undefined,
+  sourceDir: string,
+  outputDir: string,
+): Promise<{ hashedPath: string; thumbnailPath?: string } | null> {
+  const sourcePath = path.resolve(sourceDir, videoPath);
+  if (!fs.existsSync(sourcePath)) {
+    console.log(`Warning: Video not found: ${videoPath}`);
+    return null;
+  }
+
+  const hash = crypto
+    .createHash("md5")
+    .update(fs.readFileSync(sourcePath))
+    .digest("hex")
+    .slice(0, 8);
+  const parsedPath = path.parse(videoPath);
+  const hashedPath = path.join(parsedPath.dir, `${hash}${parsedPath.ext}`);
+  const destPath = path.join(outputDir, hashedPath);
+  fs.mkdirSync(path.dirname(destPath), { recursive: true });
+  fs.copyFileSync(sourcePath, destPath);
+
+  if (!posterPath) {
+    return { hashedPath };
+  }
+
+  const posterSource = path.resolve(sourceDir, posterPath);
+  if (!fs.existsSync(posterSource)) {
+    console.log(`Warning: Poster not found: ${posterPath}`);
+    return { hashedPath };
+  }
+
+  const thumbnailPath = path.join(
+    parsedPath.dir,
+    `${hash}-thumb${path.extname(posterPath)}`,
+  );
+  try {
+    await sharp(posterSource)
+      .rotate()
+      .resize(400, null, { withoutEnlargement: true, fit: "inside" })
+      .toFile(path.join(outputDir, thumbnailPath));
+    return { hashedPath, thumbnailPath };
+  } catch (error) {
+    console.log(
+      `Warning: Failed to process poster ${posterPath}: ${(error as Error).message}`,
+    );
+    return { hashedPath };
   }
 }
 

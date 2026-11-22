@@ -3,6 +3,7 @@ import path from "path";
 import yaml from "js-yaml";
 import { imageSize } from "image-size";
 import { PostData, PureConfig, ImageData } from "./types.js";
+import { isVideo, getVideoDimensions } from "./generator/video.js";
 
 // Load configuration and posts from pure.yml file
 export function loadPureConfig(
@@ -65,10 +66,13 @@ posts:
           );
         }
 
-        const dimensions = getImageDimensions(img.path, sourceDir);
+        const video = isVideo(img.path);
+        const dimensions = getMediaDimensions(img.path, sourceDir, video);
         return {
           path: img.path,
           caption: img.caption,
+          type: video ? "video" : "image",
+          poster: video ? img.poster : undefined,
           width: dimensions.width,
           height: dimensions.height,
         };
@@ -99,9 +103,10 @@ posts:
   }
 }
 
-function getImageDimensions(
+function getMediaDimensions(
   imagePath: string,
   sourceDir: string,
+  video: boolean,
 ): {
   width: number;
   height: number;
@@ -116,7 +121,11 @@ function getImageDimensions(
     }
 
     const buffer = fs.readFileSync(resolvedPath);
-    const dimensions = imageSize(buffer);
+    const dimensions = video ? getVideoDimensions(buffer) : imageSize(buffer);
+    if (!dimensions) {
+      console.log(`Warning: Could not read video dimensions: ${imagePath}`);
+      return defaultDimensions;
+    }
     return {
       width: dimensions.width || defaultDimensions.width,
       height: dimensions.height || defaultDimensions.height,

@@ -3,6 +3,8 @@ export interface ImageData {
   hashedPath?: string;
   thumbnailPath?: string;
   caption?: string;
+  type?: "image" | "video";
+  poster?: string; // optional poster image for videos
   width?: number;
   height?: number;
 }

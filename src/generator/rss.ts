@@ -52,6 +52,7 @@ export function generateRSSFeed(
         url: imageUrl,
         alt: alt,
         caption: image.caption,
+        type: image.type,
       };
     });
 
