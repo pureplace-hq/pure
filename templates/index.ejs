@@ -146,12 +146,34 @@
       text-decoration: none;
     }
 
-    .image-item img {
+    .image-item a {
+      position: relative;
+    }
+
+    .image-item img,
+    .image-item video {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
       transition: transform 0.2s ease;
+    }
+
+    .image-item video {
+      pointer-events: none;
+    }
+
+    .play-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 48px;
+      height: 48px;
+      transform: translate(-50%, -50%);
+      color: white;
+      opacity: 0.9;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+      pointer-events: none;
     }
 
     footer {
@@ -226,11 +248,25 @@
         <div class="image-grid" data-gallery="gallery-<%= postIndex %>">
           <% post.images.forEach(function(image) { %>
           <div class="image-item">
+            <% if (image.type === 'video') { %>
+            <a href="<%= image.hashedPath || image.path %>"
+               data-pswp-type="video"
+               data-pswp-width="<%= image.width %>"
+               data-pswp-height="<%= image.height %>"<% if (image.thumbnailPath) { %>
+               data-pswp-msrc="<%= image.thumbnailPath %>"<% } %>>
+              <% if (image.thumbnailPath) { %>
+              <img src="<%= image.thumbnailPath %>" alt="<%= post.title || 'Post' %>" loading="lazy" />
+              <% } else { %>
+              <video src="<%= image.hashedPath || image.path %>#t=0.1" preload="metadata" muted playsinline disablepictureinpicture tabindex="-1"></video>
+              <% } %>
+              <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            <% } else { %>
             <a href="<%= image.hashedPath || image.path %>"
                data-pswp-width="<%= image.width %>"
                data-pswp-height="<%= image.height %>"
                data-pswp-msrc="<%= image.thumbnailPath || image.hashedPath || image.path %>">
               <img src="<%= image.thumbnailPath || image.hashedPath || image.path %>" alt="<%= post.title || 'Post' %>" loading="lazy" />
+            <% } %>
               <div class="pswp-caption-content-<%= postIndex %>"><% if (post.title) { %><strong><%= post.title %></strong><% } %><% if (image.caption) { %><br /><%= image.caption %><% } %></div>
             </a>
           </div>

@@ -42,8 +42,25 @@ Each post requires:
   - Date only: `2025-01-15`
 - **title**: Optional title for the post
 - **images**: Array of image objects
-  - **path**: Path to image file
+  - **path**: Path to image or video file
   - **caption**: Optional caption for individual image
+  - **poster**: Optional thumbnail image for a video
+
+### Videos
+
+Files ending in `.mp4`, `.m4v` or `.mov` are treated as videos and play in the
+lightbox alongside photos. Videos are copied as-is (no transcoding), so use a
+format browsers can play, such as H.264 or HEVC MP4. No ffmpeg is required.
+
+Without a `poster`, the grid shows a frame from the video itself. With a
+`poster`, that image is resized into the grid thumbnail instead, which is
+lighter for the browser to load.
+
+```yaml
+images:
+  - path: img/waves.mp4
+    poster: img/waves.jpg
+```
 
 ### Complete Example
 
@@ -78,6 +95,13 @@ posts:
       - path: img/city1.jpg
       - path: img/city2.jpg
       - path: img/city3.jpg
+
+  # Post with a video
+  - timestamp: 2025-01-01T12:00:00
+    title: Fireworks
+    images:
+      - path: img/fireworks.mp4
+        caption: Midnight
 ```
 
 ## Features
